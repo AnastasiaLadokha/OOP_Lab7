@@ -27,7 +27,7 @@ public class ProductStore implements Serializable {
     }
 
     protected void fireProductEvent(ProductEvent productEvent){
-        productListeners.forEach((listener) -> listener.onProductEvent(productEvent));
+        productListeners.forEach((lsn) -> lsn.onProductEvent(productEvent));
     }
 
     public void add(IWeight newProduct) {

@@ -1,5 +1,7 @@
 package ua.stu.model;
 
-public interface IWeight{
+import java.io.Serializable;
+
+public interface IWeight extends Serializable {
     float weight();
 }

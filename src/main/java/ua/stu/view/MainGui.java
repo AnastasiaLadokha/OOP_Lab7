@@ -3,6 +3,7 @@ package ua.stu.view;
 import ua.stu.event.IProductListener;
 import ua.stu.event.ProductEvent;
 import ua.stu.file.OpenAndSave;
+import ua.stu.file.fileLog;
 import ua.stu.model.IWeight;
 import ua.stu.store.ProductStore;
 import ua.stu.store.WoodDirectory;
@@ -12,10 +13,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class MainGui {
     private JPanel MainPanel;
-    private JList<IWoodDialog> list1;
+    private JList list1;
     private JTextArea textArea1;
     public JFrame frame;
 
@@ -26,6 +30,7 @@ public class MainGui {
     private JMenu menu_event = new JMenu("Event");
     private JMenuItem menuItem_addl = new JMenuItem("Add listener");
     private JMenuItem menuItem_rem = new JMenuItem("Remove listener");
+    private JMenuItem menuItem_log = new JMenuItem("Log");
 
     private WoodDirectory woodDirectory = new WoodDirectory();
     private ProductStore productStore = new ProductStore();
@@ -50,6 +55,7 @@ public class MainGui {
         menu.add(menuItem_save);
         menu_event.add(menuItem_addl);
         menu_event.add(menuItem_rem);
+        menu_event.add(menuItem_log);
         frame.setJMenuBar(menuBar);
 
         DefaultListModel<IWoodDialog> model = new DefaultListModel<>();
@@ -58,6 +64,27 @@ public class MainGui {
         model.addElement(dlgWaste);
         model.addElement(dlgWood);
         list1.setModel(model);
+
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Log.txt", false));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        IProductListener productListener = new IProductListener() {
+            @Override
+            public void onProductEvent(ProductEvent event) {
+                System.err.println(event);
+                try {
+                    BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Log.txt", true));
+                    bufferedWriter.write(event.toString());
+                    bufferedWriter.newLine();
+                    bufferedWriter.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        };
 
         menuItem_save.addActionListener(new ActionListener() {
             @Override
@@ -91,20 +118,27 @@ public class MainGui {
 
         });
 
-        IProductListener productListener = new IProductListener() {
-            @Override
-            public void onProductEvent(ProductEvent event) {
-                System.err.println(event);
-            }
-        };
-
         menuItem_addl.addActionListener(e -> productStore.addProductListener(productListener));
 
         menuItem_rem.addActionListener(e -> productStore.removeProductListener(productListener));
 
+        menuItem_log.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, fileLog.readLog(), "Log", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        productStore.addProductListener(new IProductListener() {
+            @Override
+            public void onProductEvent(ProductEvent event) {
+                fileLog.writeLog(event.toString());
+            }
+        });
+
         list1.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                IWoodDialog dialog = list1.getSelectedValue();
+                IWoodDialog dialog = (IWoodDialog) list1.getSelectedValue();
                 dialog.setWoodDirectory(woodDirectory);
                 dialog.setVisible(true);
                 Object object = dialog.getObject();

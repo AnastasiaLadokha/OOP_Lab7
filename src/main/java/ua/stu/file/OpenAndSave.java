@@ -6,7 +6,7 @@ import ua.stu.store.WoodDirectory;
 import javax.swing.*;
 import java.io.*;
 
-public class OpenAndSave {
+public class OpenAndSave{
     public static void save(WoodDirectory woodDirectory, ProductStore productStore) throws Exception{
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         JFileChooser dialog = new JFileChooser();
@@ -43,4 +43,6 @@ public class OpenAndSave {
             return obj;
         }else return null;
     }
+
+
 }

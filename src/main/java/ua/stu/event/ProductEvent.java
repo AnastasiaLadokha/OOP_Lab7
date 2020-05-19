@@ -2,11 +2,12 @@ package ua.stu.event;
 
 import ua.stu.model.IWeight;
 
+import java.util.Date;
 import java.util.EventObject;
 
 public class ProductEvent extends EventObject {
     private IWeight product;
-    private long time;
+    private Date date = new Date();
 
     /**
      * Constructs a prototypical Event.
@@ -17,19 +18,18 @@ public class ProductEvent extends EventObject {
     public ProductEvent(Object source, IWeight product) {
         super(source);
         this.product = product;
-        this.time = System.currentTimeMillis();
     }
 
     public IWeight getProduct() {
         return product;
     }
 
-    public long getTime() {
-        return time;
+    public Date getDate() {
+        return date;
     }
 
     @Override
     public String toString() {
-        return time % 1000 + " : " + product;
+        return date + " : " + product;
     }
 }
